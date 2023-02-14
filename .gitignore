@@ -1,3 +1,5 @@
 /venv/*
 /db.sqlite3
 /.idea/*
+events_api/__pycache__/
+BikeEvents/__pycache__/
