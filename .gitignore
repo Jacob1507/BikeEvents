@@ -4,3 +4,4 @@
 events_api/__pycache__/
 events_api/migrations/__pycache__/
 BikeEvents/__pycache__/
+*/__pycache__/
