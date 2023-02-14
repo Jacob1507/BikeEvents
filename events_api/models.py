@@ -42,8 +42,8 @@ class Riders(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     age = models.IntegerField()
-    country = models.ForeignKey(Locations, on_delete=models.PROTECT)
-    team = models.ForeignKey(Teams, on_delete=models.PROTECT)
+    country = models.ForeignKey(Locations, on_delete=models.CASCADE)
+    team = models.ForeignKey(Teams, on_delete=models.CASCADE)
     uci_points_total = models.DecimalField(decimal_places=2, max_digits=20_000)
 
 
