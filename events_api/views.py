@@ -1,6 +1,5 @@
 from rest_framework import generics
 
-from .models import Locations
 from .models import Events
 from .models import Tracks
 from .models import Teams
@@ -10,7 +9,6 @@ from .models import EventWeatherConditions
 from .models import EventGeospatialData
 from .models import UciPoints
 
-from .serializers import LocationsSerializer
 from .serializers import EventsSerializer
 from .serializers import TracksSerializer
 from .serializers import TeamsSerializer
@@ -23,11 +21,6 @@ from .serializers import UciPointsSerializer
 """
 API endpoints that allows users to be viewed or edited.
 """
-
-
-class LocationList(generics.ListCreateAPIView):
-    queryset = Locations.objects.all()
-    serializer_class = LocationsSerializer
 
 
 class EventsList(generics.ListCreateAPIView):

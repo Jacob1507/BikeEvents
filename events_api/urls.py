@@ -4,7 +4,6 @@ from events_api import views
 
 
 urlpatterns = [
-    path('locations/', views.LocationList.as_view()),
     path('events/', views.EventsList.as_view()),
     path('events/<int:pk>/', views.EventDetail.as_view()),
     path('tracks/', views.TracksList.as_view()),

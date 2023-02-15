@@ -1,6 +1,5 @@
 from rest_framework import serializers
 
-from .models import Locations
 from .models import Events
 from .models import Tracks
 from .models import Teams
@@ -9,14 +8,6 @@ from .models import RaceData
 from .models import EventWeatherConditions
 from .models import EventGeospatialData
 from .models import UciPoints
-
-
-class LocationsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Locations
-        fields = (
-            'country',
-        )
 
 
 class EventsSerializer(serializers.ModelSerializer):

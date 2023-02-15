@@ -1,8 +1,16 @@
 from django.db import models
 
 
-class Locations(models.Model):
-    country = models.CharField(max_length=50)
+COUNTRIES = [
+    ('POL', 'Poland'),
+    ('ENG', 'England'),
+    ('USA', 'United Stated of America'),
+    ('CAN', 'Canada'),
+    ('NOR', 'Norway'),
+    ('NZL', 'New Zealand'),
+    ('DEU', 'Germany'),
+    ('FRA', 'France'),
+]
 
 
 class Events(models.Model):
@@ -15,16 +23,22 @@ class Events(models.Model):
         ('MX', 'marathon')
     )
 
+    DIFFICULTY = (
+        ('JR', 'Juniors'),
+        ('AMT', 'Amateurs'),
+        ('SR', 'Seniors')
+    )
+
     event_title = models.CharField(max_length=50)
     event_type = models.CharField(choices=EVENT_TYPES, max_length=15)
-    location = models.ForeignKey(Locations, on_delete=models.CASCADE)
+    location = models.CharField(choices=COUNTRIES, max_length=3)
     is_uci_regulated = models.BooleanField()
     start_date = models.DateField()
     end_date = models.DateField()
     number_of_riders = models.IntegerField()
     stages = models.IntegerField()
-    difficulty = models.IntegerField()
-    event_weight = models.DecimalField(decimal_places=2, max_digits=100)
+    difficulty = models.CharField(choices=DIFFICULTY, max_length=30)
+    event_weight = models.DecimalField(decimal_places=1, max_digits=100)
 
 
 class Tracks(models.Model):
@@ -42,9 +56,9 @@ class Riders(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     age = models.IntegerField()
-    country = models.ForeignKey(Locations, on_delete=models.CASCADE)
+    country = models.CharField(choices=COUNTRIES, max_length=3)
     team = models.ForeignKey(Teams, on_delete=models.CASCADE)
-    uci_points_total = models.DecimalField(decimal_places=2, max_digits=20_000)
+    uci_points_total = models.DecimalField(decimal_places=1, max_digits=20_000)
 
 
 class RaceData(models.Model):

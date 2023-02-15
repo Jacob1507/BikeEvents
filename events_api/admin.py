@@ -1,6 +1,5 @@
 from django.contrib import admin
 
-from .models import Locations
 from .models import Events
 from .models import Tracks
 from .models import Teams
@@ -11,7 +10,6 @@ from .models import EventGeospatialData
 from .models import UciPoints
 
 
-admin.site.register(Locations)
 admin.site.register(Events)
 admin.site.register(Tracks)
 admin.site.register(Teams)
