@@ -16,22 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-# from rest_framework import routers
-# from events_api import views
-
-
-# router = routers.DefaultRouter()
-# router.register(r'locations/', views.LocationViewSet)
-# router.register(r'events/', views.EventsViewSet)
-# router.register(r'tracks/', views.TracksViewSet)
-# router.register(r'teams/', views.TeamsViewSet)
-# router.register(r'riders/', views.RidersViewSet),
-# router.register(r'race-data/', views.RaceDataViewSet)
-# router.register(r'event-weather-conditions/', views.EventWeatherConditionsViewSet)
-# router.register(r'event-geospatial-data/', views.EventGeospatialDataViewSet)
-# router.register(r'uci-points/', views.UciPointsViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api-auth/', include('rest_framework.urls')),
     path('', include('events_api.urls'))
 ]

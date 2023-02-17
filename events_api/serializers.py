@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from .models import Events
@@ -10,14 +11,10 @@ from .models import EventGeospatialData
 from .models import UciPoints
 
 
-class EventsSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Events
-        fields = (
-            'event_title', 'event_type', 'location', 'is_uci_regulated',
-            'start_date', 'end_date', 'number_of_riders', 'stages',
-            'difficulty', 'event_weight',
-        )
+        model = User
+        fields = ('id', 'username')
 
 
 class TracksSerializer(serializers.ModelSerializer):
@@ -26,6 +23,18 @@ class TracksSerializer(serializers.ModelSerializer):
         fields = (
             'event', 'track_name', 'stage_number', 'track_length_meters',
         )
+
+
+class EventsSerializer(serializers.ModelSerializer):
+    tracks = serializers.StringRelatedField(many=True)
+
+    class Meta:
+        model = Events
+        fields = [
+            'event_title', 'event_type', 'location', 'is_uci_regulated',
+            'start_date', 'end_date', 'number_of_riders', 'stages',
+            'difficulty', 'event_weight', 'tracks',
+        ]
 
 
 class TeamsSerializer(serializers.ModelSerializer):
