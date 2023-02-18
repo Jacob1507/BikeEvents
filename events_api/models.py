@@ -4,7 +4,7 @@ from django.db import models
 COUNTRIES = [
     ('POL', 'Poland'),
     ('ENG', 'England'),
-    ('USA', 'United Stated of America'),
+    ('USA', 'United States of America'),
     ('CAN', 'Canada'),
     ('NOR', 'Norway'),
     ('NZL', 'New Zealand'),
@@ -25,7 +25,7 @@ class Events(models.Model):
 
     DIFFICULTY = (
         ('JR', 'Juniors'),
-        ('AMT', 'Amateurs'),
+        ('AM', 'Amateurs'),
         ('SR', 'Seniors')
     )
 

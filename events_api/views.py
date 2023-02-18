@@ -59,20 +59,16 @@ class UserDetail(generics.RetrieveAPIView):
 class EventsList(generics.ListCreateAPIView):
     queryset = Events.objects.all().order_by('-start_date')
     serializer_class = EventsSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    # permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
-    def post(self, request, *args, **kwargs):
-        serializer = EventsSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_200_OK)
+    def perform_create(self, serializer):
+        return serializer.save()
 
 
 class EventDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Events.objects.all()
     serializer_class = EventsSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    # permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class TracksList(generics.ListCreateAPIView):

@@ -18,6 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class TracksSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Tracks
         fields = (
@@ -27,9 +28,6 @@ class TracksSerializer(serializers.ModelSerializer):
 
 class EventsSerializer(serializers.ModelSerializer):
     tracks = serializers.StringRelatedField(many=True)
-
-    def create(self, validated_data):
-        return Events.objects.create(**validated_data)
 
     class Meta:
         model = Events
