@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 
-from rest_framework import generics, permissions, renderers
+from rest_framework import generics, permissions, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -60,6 +60,13 @@ class EventsList(generics.ListCreateAPIView):
     queryset = Events.objects.all().order_by('-start_date')
     serializer_class = EventsSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def post(self, request, *args, **kwargs):
+        serializer = EventsSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_200_OK)
 
 
 class EventDetail(generics.RetrieveUpdateDestroyAPIView):

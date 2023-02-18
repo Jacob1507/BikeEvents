@@ -40,6 +40,9 @@ class Events(models.Model):
     difficulty = models.CharField(choices=DIFFICULTY, max_length=30)
     event_weight = models.DecimalField(decimal_places=1, max_digits=100)
 
+    def __str__(self):
+        return f'{self.event_title} ({self.event_type})'
+
 
 class Tracks(models.Model):
     event = models.ForeignKey(Events, related_name='tracks', on_delete=models.CASCADE)
@@ -62,11 +65,11 @@ class Teams(models.Model):
 
 
 class Riders(models.Model):
+    team = models.ForeignKey(Teams, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     age = models.IntegerField()
     country = models.CharField(choices=COUNTRIES, max_length=3)
-    team = models.ForeignKey(Teams, on_delete=models.CASCADE)
     uci_points_total = models.DecimalField(decimal_places=1, max_digits=20_000)
 
     def __str__(self):
@@ -76,9 +79,9 @@ class Riders(models.Model):
 class RaceData(models.Model):
     event = models.ForeignKey(Events, on_delete=models.CASCADE)
     rider = models.ForeignKey(Riders, on_delete=models.CASCADE)
+    track = models.ForeignKey(Tracks, on_delete=models.CASCADE)
     stage_time = models.TimeField()
     position = models.IntegerField()
-    track = models.ForeignKey(Tracks, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.event}|{self.track} - {self.rider}'

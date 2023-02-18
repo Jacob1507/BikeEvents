@@ -1,7 +1,6 @@
 from django.test import TestCase
 from django.utils import timezone
 
-from events_api.models import Locations
 from events_api.models import Events
 from events_api.models import Tracks
 from events_api.models import Teams
@@ -19,18 +18,10 @@ class BasicSetupTestCase(TestCase):
         start_date = timezone.now()
         end_date = timezone.now().replace(day=start_date.day + 2)
 
-        loc_pol = Locations.objects.create(
-            country='Poland'
-        )
-
-        loc_eng = Locations.objects.create(
-            country='England'
-        )
-
         self.event1 = Events.objects.create(
             event_title='DH-Race',
             event_type='DH',
-            location=loc_eng,
+            location='England',
             is_uci_regulated=True,
             start_date=start_date,
             end_date=end_date,
@@ -43,7 +34,7 @@ class BasicSetupTestCase(TestCase):
         self.event2 = Events.objects.create(
             event_title='XC-Race',
             event_type='XC',
-            location=loc_pol,
+            location='Poland',
             is_uci_regulated=False,
             start_date=start_date,
             end_date=end_date,
@@ -79,7 +70,7 @@ class BasicSetupTestCase(TestCase):
             first_name="John",
             last_name="Doe",
             age=27,
-            country=loc_eng,
+            country='England',
             team=self.team1,
             uci_points_total=1_000,
         )
@@ -88,14 +79,13 @@ class BasicSetupTestCase(TestCase):
             first_name="Jan",
             last_name="Kowalski",
             age=24,
-            country=loc_pol,
+            country='Poland',
             team=self.team2,
             uci_points_total=0,
         )
 
     def tearDown(self) -> None:
         Events.objects.all().delete()
-        Locations.objects.all().delete()
         Tracks.objects.all().delete()
         Teams.objects.all().delete()
         Riders.objects.all().delete()
@@ -106,13 +96,12 @@ class BasicModelTests(BasicSetupTestCase):
     def test_is_object_in_db(self):
         self.assertTrue(any(Events.objects.filter(event_title='DH-Race')))
         self.assertTrue(any(Events.objects.filter(event_title='XC-Race')))
-        self.assertTrue(any(Locations.objects.filter(country='Poland')))
         self.assertTrue(any(Tracks.objects.filter(track_name='XC-Track-Pol')))
         self.assertTrue(any(Teams.objects.filter(team_name='Trek')))
         self.assertTrue(any(Riders.objects.filter(first_name='Jan')))
 
     def test_foreign_keys(self):
-        rider1_country_name = self.rider1.country.country
+        rider1_country_name = self.rider1.country
         rider1_team_name = self.rider1.team.team_name
         self.assertEqual(rider1_country_name, "England")
         self.assertEqual(rider1_team_name, 'Trek')
