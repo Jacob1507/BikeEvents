@@ -76,42 +76,41 @@ class EventDetail(generics.RetrieveUpdateDestroyAPIView):
         return instance.delete()
 
     def put(self, request, *args, **kwargs):
-        event_obj = self.get_object()
+        obj = self.get_object()
         data = request.data
-        print(data)
 
-        event_obj.event_title = data["event_title"]
-        event_obj.event_type = data["event_type"]
-        event_obj.location = data["location"]
-        event_obj.is_uci_regulated = data["is_uci_regulated"]
-        event_obj.start_date = data["start_date"]
-        event_obj.end_date = data["end_date"]
-        event_obj.number_of_riders = data["number_of_riders"]
-        event_obj.stages = data["stages"]
-        event_obj.difficulty = data["difficulty"]
-        event_obj.event_weight = data["event_weight"]
+        obj.event_title = data["event_title"]
+        obj.event_type = data["event_type"]
+        obj.location = data["location"]
+        obj.is_uci_regulated = data["is_uci_regulated"]
+        obj.start_date = data["start_date"]
+        obj.end_date = data["end_date"]
+        obj.number_of_riders = data["number_of_riders"]
+        obj.stages = data["stages"]
+        obj.difficulty = data["difficulty"]
+        obj.event_weight = data["event_weight"]
 
-        event_obj.save()
-        serializer = EventsSerializer(event_obj)
+        obj.save()
+        serializer = EventsSerializer(obj)
         return Response(serializer.data)
 
     def patch(self, request, *args, **kwargs):
-        event_obj = self.get_object()
+        obj = self.get_object()
         data = request.data
 
-        event_obj.event_title = data.get("event_title", event_obj.event_title)
-        event_obj.event_type = data.get("event_type", event_obj.event_type)
-        event_obj.location = data.get("location", event_obj.location)
-        event_obj.is_uci_regulated = data.get("is_uci_regulated", event_obj.is_uci_regulated)
-        event_obj.start_date = data.get("start_date", event_obj.start_date)
-        event_obj.end_date = data.get("end_date", event_obj.end_date)
-        event_obj.number_of_riders = data.get("number_of_riders", event_obj.number_of_riders)
-        event_obj.stages = data.get("stages", event_obj.stages)
-        event_obj.difficulty = data.get("difficulty", event_obj.difficulty)
-        event_obj.event_weight = data.get("event_weight", event_obj.event_weight)
+        obj.event_title = data.get("event_title", obj.event_title)
+        obj.event_type = data.get("event_type", obj.event_type)
+        obj.location = data.get("location", obj.location)
+        obj.is_uci_regulated = data.get("is_uci_regulated", obj.is_uci_regulated)
+        obj.start_date = data.get("start_date", obj.start_date)
+        obj.end_date = data.get("end_date", obj.end_date)
+        obj.number_of_riders = data.get("number_of_riders", obj.number_of_riders)
+        obj.stages = data.get("stages", obj.stages)
+        obj.difficulty = data.get("difficulty", obj.difficulty)
+        obj.event_weight = data.get("event_weight", obj.event_weight)
 
-        event_obj.save()
-        serializer = EventsSerializer(event_obj)
+        obj.save()
+        serializer = EventsSerializer(obj)
         return Response(serializer.data)
 
 
@@ -129,11 +128,36 @@ class TrackDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TracksSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
-    def perform_update(self, serializer):
-        return serializer.save()
-
     def perform_destroy(self, instance):
         return instance.delete()
+
+    def put(self, request, *args, **kwargs):
+        obj = self.get_object()
+        data = request.data
+
+        obj.event = data["event"]
+        obj.track_name = data["track_name"]
+        obj.stage_number = data["stage_number"]
+        obj.track_length_meters = data["track_length_meters"]
+
+        obj.is_valid(raise_exception=True)
+        obj.save()
+        serializer = TracksSerializer(obj)
+        return Response(serializer.data)
+
+    def patch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        data = request.data
+
+        obj.event = data.get("event", obj.event)
+        obj.track_name = data.get("track_name", obj.track_name)
+        obj.stage_number = data.get("stage_number", obj.stage_number)
+        obj.track_length_meters = data.get("track_length_meters", obj.track_length_meters)
+
+        obj.is_valid(raise_exception=True)
+        obj.save()
+        serializer = TracksSerializer(obj)
+        return Response(serializer.data)
 
 
 class TeamsList(generics.ListCreateAPIView):
@@ -150,6 +174,27 @@ class TeamDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TeamsSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
+    def perform_destroy(self, instance):
+        return instance.delete()
+
+    def put(self, request, *args, **kwargs):
+        obj = self.get_object()
+        data = request.data
+
+        obj.team_name = data["team_name"]
+        obj.save()
+        serializer = TeamsSerializer(obj)
+        return Response(serializer.data)
+
+    def patch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        data = request.data
+
+        obj.team_name = data.get("team_name", obj.team_name)
+        obj.save()
+        serializer = TeamsSerializer(obj)
+        return Response(serializer.data)
+
 
 class RidersList(generics.ListCreateAPIView):
     queryset = Riders.objects.all()
@@ -164,6 +209,39 @@ class RiderDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Riders.objects.all()
     serializer_class = RidersSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def perform_destroy(self, instance):
+        return instance.delete()
+
+    def put(self, request, *args, **kwargs):
+        obj = self.get_object()
+        data = request.data
+
+        obj.team = data["team"]
+        obj.first_name = data["first_name"]
+        obj.last_name = data["last_name"]
+        obj.age = data["age"]
+        obj.country = data["country"]
+        obj.uci_points_total = data["uci_points_total"]
+
+        obj.save()
+        serializer = RidersSerializer(obj)
+        return Response(serializer.data)
+
+    def patch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        data = request.data
+
+        obj.team = data.get("team", obj.team)
+        obj.first_name = data.get("first_name", obj.first_name)
+        obj.last_name = data.get("last_name", obj.last_name)
+        obj.age = data.get("age", obj.age)
+        obj.country = data.get("country", obj. country)
+        obj.uci_points_total = data.get("uci_points_total", obj.uci_points_total)
+
+        obj.save()
+        serializer = RidersSerializer(obj)
+        return Response(serializer.data)
 
 
 class RaceDataList(generics.ListCreateAPIView):
@@ -180,6 +258,37 @@ class RaceDataDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = RaceDataSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
+    def perform_destroy(self, instance):
+        return instance.delete()
+
+    def put(self, request, *args, **kwargs):
+        obj = self.get_object()
+        data = request.data
+
+        obj.event = data["event"]
+        obj.rider = data["rider"]
+        obj.track = data["track"]
+        obj.stage_time = data["stage_time"]
+        obj.position = data["position"]
+
+        obj.save()
+        serializer = RaceDataSerializer(obj)
+        return Response(serializer.data)
+
+    def patch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        data = request.data
+
+        obj.event = data.get("event", obj.event)
+        obj.rider = data.get("rider", obj.rider)
+        obj.track = data.get("track", obj.track)
+        obj.stage_time = data.get("stage_time", obj.stage_time)
+        obj.position = data.get("position", obj.position)
+
+        obj.save()
+        serializer = RaceDataSerializer(obj)
+        return Response(serializer.data)
+
 
 class EventWeatherConditionsList(generics.ListCreateAPIView):
     queryset = EventWeatherConditions.objects.all().order_by('-event__start_date')
@@ -194,6 +303,35 @@ class EventWeatherConditionsDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = EventWeatherConditions.objects.all()
     serializer_class = EventWeatherConditionsSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def perform_destroy(self, instance):
+        return instance.delete()
+
+    def put(self, request, *args, **kwargs):
+        obj = self.get_object()
+        data = request.data
+
+        obj.event = data["event"]
+        obj.weather = data["weather"]
+        obj.avg_temp = data["avg_temp"]
+        obj.avg_wind_speed = data["avg_wind_speed"]
+
+        obj.save()
+        serializer = EventWeatherConditionsSerializer(obj)
+        return Response(serializer.data)
+
+    def patch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        data = request.data
+
+        obj.event = data.get("event", obj.event)
+        obj.weather = data.get("weather", obj.weather)
+        obj.avg_temp = data.get("avg_temp", obj.avg_temp)
+        obj.avg_wind_speed = data.get("avg_wind_speed", obj.avg_wind_speed)
+
+        obj.save()
+        serializer = EventWeatherConditionsSerializer(obj)
+        return Response(serializer.data)
 
 
 class EventGeospatialDataList(generics.ListCreateAPIView):
@@ -210,8 +348,46 @@ class EventGeospatialDataDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = EventGeospatialDataSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
+    def perform_destroy(self, instance):
+        return instance.delete()
+
+    def put(self, request, *args, **kwargs):
+        obj = self.get_object()
+        data = request.data
+
+        obj.event = data["event"]
+        obj.longitude = data["longitude"]
+        obj.latitude = data["latitude"]
+
+        obj.save()
+        serializer = EventGeospatialDataSerializer(obj)
+        return Response(serializer.data)
+
 
 class UciPointsList(generics.ListCreateAPIView):
     queryset = UciPoints.objects.all().order_by('-rider_position')
     serializer_class = UciPointsSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def perform_create(self, serializer):
+        return serializer.save()
+
+
+class UciPointsDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = EventGeospatialData.objects.all()
+    serializer_class = EventGeospatialDataSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def perform_destroy(self, instance):
+        return instance.delete()
+
+    def put(self, request, *args, **kwargs):
+        obj = self.get_object()
+        data = request.data
+
+        obj.rider_position = data["rider_position"]
+        obj.points = data["points"]
+
+        obj.save()
+        serializer = UciPointsSerializer(obj)
+        return Response(serializer.data)
