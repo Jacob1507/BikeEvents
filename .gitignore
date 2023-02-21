@@ -6,3 +6,4 @@ events_api/migrations/__pycache__/
 BikeEvents/__pycache__/
 **/__pycache__
 */migrations/
+.env
