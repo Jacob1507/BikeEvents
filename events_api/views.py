@@ -9,6 +9,7 @@ from .models import Event
 from .models import Track
 from .models import Team
 from .models import Rider
+from .models import EventParticipant
 from .models import RaceData
 from .models import EventWeatherConditions
 from .models import EventGeospatialData
@@ -19,6 +20,7 @@ from .serializers import EventsSerializer
 from .serializers import TracksSerializer
 from .serializers import TeamsSerializer
 from .serializers import RidersSerializer
+from .serializers import EventParticipantSerializer
 from .serializers import RaceDataSerializer
 from .serializers import EventWeatherConditionsSerializer
 from .serializers import EventGeospatialDataSerializer
@@ -40,6 +42,7 @@ def api_root(request, format=None):
             'tracks': reverse('track-list', request=request, format=format),
             'teams': reverse('team-list', request=request, format=format),
             'riders': reverse('rider-list', request=request, format=format),
+            'event_participants': reverse('event-participants-list', request=request, format=format),
             'race_data': reverse('race-data-list', request=request, format=format),
             'event_weather_conditions': reverse('event-weather-conditions-list', request=request, format=format),
             'event_geospatial_data': reverse('event-geospatial-data-list', request=request, format=format),
@@ -85,7 +88,6 @@ class EventDetail(generics.RetrieveUpdateDestroyAPIView):
         obj.is_uci_regulated = data["is_uci_regulated"]
         obj.start_date = data["start_date"]
         obj.end_date = data["end_date"]
-        obj.number_of_riders = data["number_of_riders"]
         obj.stages = data["stages"]
         obj.difficulty = data["difficulty"]
         obj.event_weight = data["event_weight"]
@@ -104,7 +106,6 @@ class EventDetail(generics.RetrieveUpdateDestroyAPIView):
         obj.is_uci_regulated = data.get("is_uci_regulated", obj.is_uci_regulated)
         obj.start_date = data.get("start_date", obj.start_date)
         obj.end_date = data.get("end_date", obj.end_date)
-        obj.number_of_riders = data.get("number_of_riders", obj.number_of_riders)
         obj.stages = data.get("stages", obj.stages)
         obj.difficulty = data.get("difficulty", obj.difficulty)
         obj.event_weight = data.get("event_weight", obj.event_weight)
@@ -238,6 +239,12 @@ class RiderDetail(generics.RetrieveUpdateDestroyAPIView):
         obj.save()
         serializer = RidersSerializer(obj)
         return Response(serializer.data)
+
+
+class EventParticipantList(generics.ListCreateAPIView):
+    queryset = EventParticipant.objects.all()
+    serializer_class = EventParticipantSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class RaceDataList(generics.ListCreateAPIView):

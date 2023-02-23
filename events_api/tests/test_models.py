@@ -25,7 +25,6 @@ class BasicSetupTestCase(TestCase):
             is_uci_regulated=True,
             start_date=start_date,
             end_date=end_date,
-            number_of_riders=21,
             stages=0,
             difficulty=8,
             event_weight=1.2
@@ -38,7 +37,6 @@ class BasicSetupTestCase(TestCase):
             is_uci_regulated=False,
             start_date=start_date,
             end_date=end_date,
-            number_of_riders=21,
             stages=0,
             difficulty=8,
             event_weight=1.2

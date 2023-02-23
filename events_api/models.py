@@ -35,7 +35,6 @@ class Event(models.Model):
     is_uci_regulated = models.BooleanField()
     start_date = models.DateField()
     end_date = models.DateField()
-    number_of_riders = models.IntegerField()
     stages = models.IntegerField()
     difficulty = models.CharField(choices=DIFFICULTY, max_length=30)
     event_weight = models.DecimalField(decimal_places=1, max_digits=100)
@@ -74,15 +73,23 @@ class Team(models.Model):
 
 
 class Rider(models.Model):
-    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     age = models.IntegerField()
     country = models.CharField(choices=COUNTRIES, max_length=3)
-    uci_points_total = models.DecimalField(decimal_places=1, max_digits=20_000)
+    uci_points_total = models.DecimalField(decimal_places=1, max_digits=20_000, default=0)
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name} - {self.team}'
+        return f'{self.first_name} {self.last_name}'
+
+
+class EventParticipant(models.Model):
+    person = models.ForeignKey(Rider, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='participants')
+
+    def __str__(self):
+        return f'{self.person.first_name} {self.person.last_name}'
 
 
 class RaceData(models.Model):

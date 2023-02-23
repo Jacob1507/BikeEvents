@@ -12,6 +12,7 @@ urlpatterns = [
     path('teams/<int:pk>/', views.TeamDetail.as_view(), name='team-detail'),
     path('riders/', views.RiderList.as_view(), name='rider-list'),
     path('riders/<int:pk>/', views.RiderDetail.as_view(), name='rider-detail'),
+    path('event-participants/', views.EventParticipantList.as_view(), name='event-participants-list'),
     path('race-data/', views.RaceDataList.as_view(), name='race-data-list'),
     path('race-data/<int:pk>/', views.RaceDataDetail.as_view(), name='race-data-detail'),
     path('event-weather-conditions/', views.EventWeatherConditionsList.as_view(),

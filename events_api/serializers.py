@@ -5,6 +5,7 @@ from .models import Event
 from .models import Track
 from .models import Team
 from .models import Rider
+from .models import EventParticipant
 from .models import RaceData
 from .models import EventWeatherConditions
 from .models import EventGeospatialData
@@ -26,14 +27,15 @@ class TracksSerializer(serializers.ModelSerializer):
 
 
 class EventsSerializer(serializers.ModelSerializer):
-    tracks = serializers.StringRelatedField(many=True)
+    tracks = serializers.StringRelatedField(many=True, read_only=True)
+    participants = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Event
         fields = [
             'event_title', 'event_type', 'location', 'is_uci_regulated',
-            'start_date', 'end_date', 'number_of_riders', 'stages',
-            'difficulty', 'event_weight', 'tracks',
+            'start_date', 'end_date', 'stages',
+            'difficulty', 'event_weight', 'tracks', 'participants',
         ]
 
 
@@ -49,6 +51,15 @@ class RidersSerializer(serializers.ModelSerializer):
         fields = (
             'first_name', 'last_name', 'age', 'country', 'team', 'uci_points_total',
         )
+
+
+class EventParticipantSerializer(serializers.ModelSerializer):
+    person = serializers.StringRelatedField()
+    event = serializers.StringRelatedField()
+
+    class Meta:
+        model = EventParticipant
+        fields = '__all__'
 
 
 class RaceDataSerializer(serializers.ModelSerializer):
