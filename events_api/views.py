@@ -5,10 +5,10 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
-from .models import Events
-from .models import Tracks
-from .models import Teams
-from .models import Riders
+from .models import Event
+from .models import Track
+from .models import Team
+from .models import Rider
 from .models import RaceData
 from .models import EventWeatherConditions
 from .models import EventGeospatialData
@@ -58,8 +58,8 @@ class UserDetail(generics.RetrieveAPIView):
     serializer_class = UserSerializer
 
 
-class EventsList(generics.ListCreateAPIView):
-    queryset = Events.objects.all().order_by('-start_date')
+class EventList(generics.ListCreateAPIView):
+    queryset = Event.objects.all().order_by('-start_date')
     serializer_class = EventsSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
@@ -68,7 +68,7 @@ class EventsList(generics.ListCreateAPIView):
 
 
 class EventDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Events.objects.all()
+    queryset = Event.objects.all()
     serializer_class = EventsSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
@@ -114,8 +114,8 @@ class EventDetail(generics.RetrieveUpdateDestroyAPIView):
         return Response(serializer.data)
 
 
-class TracksList(generics.ListCreateAPIView):
-    queryset = Tracks.objects.all().order_by('-event__start_date')
+class TrackList(generics.ListCreateAPIView):
+    queryset = Track.objects.all().order_by('-event__start_date')
     serializer_class = TracksSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
@@ -124,7 +124,7 @@ class TracksList(generics.ListCreateAPIView):
 
 
 class TrackDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Tracks.objects.all()
+    queryset = Track.objects.all()
     serializer_class = TracksSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
@@ -135,12 +135,10 @@ class TrackDetail(generics.RetrieveUpdateDestroyAPIView):
         obj = self.get_object()
         data = request.data
 
-        obj.event = data["event"]
         obj.track_name = data["track_name"]
         obj.stage_number = data["stage_number"]
         obj.track_length_meters = data["track_length_meters"]
 
-        obj.is_valid(raise_exception=True)
         obj.save()
         serializer = TracksSerializer(obj)
         return Response(serializer.data)
@@ -149,19 +147,17 @@ class TrackDetail(generics.RetrieveUpdateDestroyAPIView):
         obj = self.get_object()
         data = request.data
 
-        obj.event = data.get("event", obj.event)
         obj.track_name = data.get("track_name", obj.track_name)
         obj.stage_number = data.get("stage_number", obj.stage_number)
         obj.track_length_meters = data.get("track_length_meters", obj.track_length_meters)
 
-        obj.is_valid(raise_exception=True)
         obj.save()
         serializer = TracksSerializer(obj)
         return Response(serializer.data)
 
 
-class TeamsList(generics.ListCreateAPIView):
-    queryset = Teams.objects.all()
+class TeamList(generics.ListCreateAPIView):
+    queryset = Team.objects.all()
     serializer_class = TeamsSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
@@ -170,7 +166,7 @@ class TeamsList(generics.ListCreateAPIView):
 
 
 class TeamDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Teams.objects.all()
+    queryset = Team.objects.all()
     serializer_class = TeamsSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
@@ -196,8 +192,8 @@ class TeamDetail(generics.RetrieveUpdateDestroyAPIView):
         return Response(serializer.data)
 
 
-class RidersList(generics.ListCreateAPIView):
-    queryset = Riders.objects.all()
+class RiderList(generics.ListCreateAPIView):
+    queryset = Rider.objects.all()
     serializer_class = RidersSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
@@ -206,7 +202,7 @@ class RidersList(generics.ListCreateAPIView):
 
 
 class RiderDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Riders.objects.all()
+    queryset = Rider.objects.all()
     serializer_class = RidersSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 

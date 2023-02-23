@@ -13,7 +13,7 @@ COUNTRIES = [
 ]
 
 
-class Events(models.Model):
+class Event(models.Model):
     EVENT_TYPES = (
         ('XC', 'cross-country'),
         ('DH', 'downhill'),
@@ -44,8 +44,8 @@ class Events(models.Model):
         return f'{self.event_title} ({self.event_type})'
 
 
-class Tracks(models.Model):
-    event = models.ForeignKey(Events, related_name='tracks', on_delete=models.CASCADE)
+class Track(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='tracks')
     track_name = models.CharField(max_length=50)
     stage_number = models.IntegerField()
     track_length_meters = models.IntegerField()
@@ -56,16 +56,25 @@ class Tracks(models.Model):
     def __str__(self):
         return f'{self.track_name} (stage: {self.stage_number})'
 
+    def to_dict(self):
+        data = {
+            "event": self.event.pk,
+            "track_name": self.track_name,
+            "stage_number": self.stage_number,
+            "track_length_meters": self.track_length_meters
+        }
+        return data
 
-class Teams(models.Model):
+
+class Team(models.Model):
     team_name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.team_name
 
 
-class Riders(models.Model):
-    team = models.ForeignKey(Teams, on_delete=models.CASCADE)
+class Rider(models.Model):
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     age = models.IntegerField()
@@ -77,9 +86,9 @@ class Riders(models.Model):
 
 
 class RaceData(models.Model):
-    event = models.ForeignKey(Events, on_delete=models.CASCADE)
-    rider = models.ForeignKey(Riders, on_delete=models.CASCADE)
-    track = models.ForeignKey(Tracks, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    rider = models.ForeignKey(Rider, on_delete=models.CASCADE)
+    track = models.ForeignKey(Track, on_delete=models.CASCADE)
     stage_time = models.TimeField()
     position = models.IntegerField()
 
@@ -88,7 +97,7 @@ class RaceData(models.Model):
 
 
 class EventWeatherConditions(models.Model):
-    event = models.ForeignKey(Events, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
     weather = models.TextField(max_length=50)
     avg_temp = models.FloatField(max_length=200)
     avg_wind_speed = models.FloatField(max_length=200)
@@ -98,7 +107,7 @@ class EventWeatherConditions(models.Model):
 
 
 class EventGeospatialData(models.Model):
-    event = models.ForeignKey(Events, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
     longitude = models.FloatField()
     latitude = models.FloatField()
 

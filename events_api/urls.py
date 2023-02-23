@@ -4,13 +4,13 @@ from events_api import views
 
 
 urlpatterns = [
-    path('events/', views.EventsList.as_view(), name='event-list'),
+    path('events/', views.EventList.as_view(), name='event-list'),
     path('events/<int:pk>/', views.EventDetail.as_view(), name='event-detail'),
-    path('tracks/', views.TracksList.as_view(), name='track-list'),
+    path('tracks/', views.TrackList.as_view(), name='track-list'),
     path('tracks/<int:pk>/', views.TrackDetail.as_view(), name='track-detail'),
-    path('teams/', views.TeamsList.as_view(), name='team-list'),
+    path('teams/', views.TeamList.as_view(), name='team-list'),
     path('teams/<int:pk>/', views.TeamDetail.as_view(), name='team-detail'),
-    path('riders/', views.RidersList.as_view(), name='rider-list'),
+    path('riders/', views.RiderList.as_view(), name='rider-list'),
     path('riders/<int:pk>/', views.RiderDetail.as_view(), name='rider-detail'),
     path('race-data/', views.RaceDataList.as_view(), name='race-data-list'),
     path('race-data/<int:pk>/', views.RaceDataDetail.as_view(), name='race-data-detail'),
