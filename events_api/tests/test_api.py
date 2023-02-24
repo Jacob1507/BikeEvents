@@ -13,6 +13,7 @@ from events_api.models import Event
 from events_api.models import Track
 from events_api.models import Team
 from events_api.models import Rider
+from events_api.models import EventParticipant
 from events_api.models import RaceData
 from events_api.models import EventWeatherConditions
 from events_api.models import EventGeospatialData
@@ -93,7 +94,14 @@ riders_data: list = [
         "last_name": "Bagiński",
         "age": 24,
         "country": "Poland",
-        "uci_points_total": 2_000
+        "uci_points_total": 2000
+    },
+    {
+        "first_name": "Test",
+        "last_name": "User",
+        "age": 27,
+        "country": "Poland",
+        "uci_points_total": 0
     }
 ]
 
@@ -129,7 +137,7 @@ event_location_data: list = [
 ]
 
 
-class TestDefaultApiUsage(APITestCase):
+class TestEventAPI(APITestCase):
 
     def setUp(self) -> None:
         self.test_user = User.objects.create_user(username='test_user', password='test')
@@ -139,6 +147,7 @@ class TestDefaultApiUsage(APITestCase):
         self.track1: Track = Track.objects.create(event=self.event1, **tracks_data[0])
 
     def tearDown(self) -> None:
+        User.objects.all().delete()
         Event.objects.all().delete()
         Track.objects.all().delete()
         Team.objects.all().delete()
@@ -223,6 +232,21 @@ class TestDefaultApiUsage(APITestCase):
         response_get = self.client.get(url)
         self.assertEqual(response_get.status_code, status.HTTP_404_NOT_FOUND)
 
+
+class TestTracksAPI(APITestCase):
+
+    def setUp(self) -> None:
+        self.test_user = User.objects.create_user(username='test_user', password='test')
+        self.client.login(username='test_user', password='test')
+
+        self.event1: Event = Event.objects.create(**events_data[0])
+        self.track1: Track = Track.objects.create(event=self.event1, **tracks_data[0])
+
+    def tearDown(self) -> None:
+        User.objects.all().delete()
+        Event.objects.all().delete()
+        Track.objects.all().delete()
+
     def test_tracks_list_get(self):
         url = reverse('track-list')
         response = self.client.get(url)
@@ -285,3 +309,45 @@ class TestDefaultApiUsage(APITestCase):
 
         response_get = self.client.get(url)
         self.assertEqual(response_get.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class TestEventParticipantsAPI(APITestCase):
+
+    def setUp(self) -> None:
+        self.test_user = User.objects.create_user(username='test_user', password='test')
+        self.client.login(username='test_user', password='test')
+
+        self.event1: Event = Event.objects.create(**events_data[0])
+        self.team1: Team = Team.objects.create(**teams_data[0])
+        self.rider1: Rider = Rider.objects.create(team=self.team1, **riders_data[0])
+
+    def tearDown(self) -> None:
+        User.objects.all().delete()
+        Event.objects.all().delete()
+        Team.objects.all().delete()
+        Rider.objects.all().delete()
+        EventParticipant.objects.all().delete()
+
+    def test_event_participants_get(self):
+        url = reverse('event-participants-list')
+        response_get = self.client.get(url)
+        self.assertEqual(response_get.status_code, status.HTTP_200_OK)
+
+    def test_event_participants_post(self):
+        obj_get_rider = Rider.objects.get(first_name='Jakub', last_name='Bagiński')
+        obj_get_event = Event.objects.get(event_title='TestEvent1')
+        data = {
+            "person": obj_get_rider.pk,
+            "event": obj_get_event.pk,
+        }
+
+        url = reverse('event-participants-list')
+        response_post = self.client.post(url, data=data)
+        self.assertEqual(response_post.status_code, status.HTTP_201_CREATED)
+
+        get_pk = EventParticipant.objects.get(person=1, event=1).pk
+
+        url = reverse('event-participants-detail', args=(get_pk,))
+        response_get = self.client.get(url)
+        self.assertEqual(response_get.status_code, status.HTTP_200_OK)
+
