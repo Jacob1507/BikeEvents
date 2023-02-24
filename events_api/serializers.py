@@ -59,7 +59,7 @@ class EventParticipantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EventParticipant
-        fields = '__all__'
+        fields = ('person', 'event')
 
 
 class RaceDataSerializer(serializers.ModelSerializer):

@@ -99,8 +99,8 @@ class Rider(models.Model):
 
 
 class EventParticipant(models.Model):
-    person = models.OneToOneField(Rider, on_delete=models.CASCADE)
-    event = models.OneToOneField(Event, on_delete=models.CASCADE, related_name='participants')
+    person = models.ForeignKey(Rider, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='participants')
 
     def __str__(self):
         return f'{self.person.first_name} {self.person.last_name}'
