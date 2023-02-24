@@ -46,6 +46,8 @@ class TeamsSerializer(serializers.ModelSerializer):
 
 
 class RidersSerializer(serializers.ModelSerializer):
+    team = serializers.StringRelatedField()
+
     class Meta:
         model = Rider
         fields = (
@@ -54,8 +56,6 @@ class RidersSerializer(serializers.ModelSerializer):
 
 
 class EventParticipantSerializer(serializers.ModelSerializer):
-    person = serializers.StringRelatedField()
-    event = serializers.StringRelatedField()
 
     class Meta:
         model = EventParticipant
@@ -79,6 +79,8 @@ class EventWeatherConditionsSerializer(serializers.ModelSerializer):
 
 
 class EventGeospatialDataSerializer(serializers.ModelSerializer):
+    event = serializers.StringRelatedField(read_only=True)
+
     class Meta:
         model = EventGeospatialData
         fields = (
@@ -89,6 +91,4 @@ class EventGeospatialDataSerializer(serializers.ModelSerializer):
 class UciPointsSerializer(serializers.ModelSerializer):
     class Meta:
         model = UciPoints
-        fields = (
-            'rider_positions', 'points',
-        )
+        fields = '__all__'

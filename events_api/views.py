@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 
+from django_filters.rest_framework import DjangoFilterBackend
+
 from rest_framework import generics, permissions, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -65,6 +67,7 @@ class EventList(generics.ListCreateAPIView):
     queryset = Event.objects.all().order_by('-start_date')
     serializer_class = EventsSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
 
     def perform_create(self, serializer):
         return serializer.save()
@@ -245,6 +248,18 @@ class EventParticipantList(generics.ListCreateAPIView):
     queryset = EventParticipant.objects.all()
     serializer_class = EventParticipantSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def perform_create(self, serializer):
+        return serializer.save()
+
+
+class EventParticipantDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = EventParticipant.objects.all()
+    serializer_class = EventParticipantSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def perform_destroy(self, instance):
+        return instance.delete()
 
 
 class RaceDataList(generics.ListCreateAPIView):

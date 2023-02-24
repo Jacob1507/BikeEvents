@@ -66,14 +66,14 @@ class Track(models.Model):
 
 
 class Team(models.Model):
-    team_name = models.CharField(max_length=100)
+    team_name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.team_name
 
 
 class Rider(models.Model):
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True, related_name='team')
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     age = models.IntegerField()
@@ -83,13 +83,38 @@ class Rider(models.Model):
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
 
+    def to_dict(self):
+        data: dict = {
+            'team': self.team.pk,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'age': self.age,
+            'country': self.country,
+            'uci_points_total': self.uci_points_total
+        }
+        return data
+
+    class Meta:
+        unique_together = ('first_name', 'last_name',)
+
 
 class EventParticipant(models.Model):
-    person = models.ForeignKey(Rider, on_delete=models.CASCADE)
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='participants')
+    person = models.OneToOneField(Rider, on_delete=models.CASCADE)
+    event = models.OneToOneField(Event, on_delete=models.CASCADE, related_name='participants')
 
     def __str__(self):
         return f'{self.person.first_name} {self.person.last_name}'
+
+    def to_dict(self):
+        data: dict = {
+            'person': self.person.pk,
+            'event': self.event.pk,
+        }
+        return data
+
+    class Meta:
+        ordering = ['-id']
+        unique_together = ('person', 'event',)
 
 
 class RaceData(models.Model):
@@ -114,9 +139,12 @@ class EventWeatherConditions(models.Model):
 
 
 class EventGeospatialData(models.Model):
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='event')
     longitude = models.FloatField()
     latitude = models.FloatField()
+
+    def __str__(self):
+        return self.event
 
 
 class UciPoints(models.Model):
