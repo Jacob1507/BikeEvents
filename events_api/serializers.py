@@ -46,12 +46,12 @@ class TeamsSerializer(serializers.ModelSerializer):
 
 
 class RidersSerializer(serializers.ModelSerializer):
-    team = serializers.StringRelatedField()
+    team_name = serializers.CharField(source='team.team_name', default="Team-less")
 
     class Meta:
         model = Rider
         fields = (
-            'first_name', 'last_name', 'age', 'country', 'team', 'uci_points_total',
+            'first_name', 'last_name', 'age', 'country', 'team_name', 'uci_points_total',
         )
 
 

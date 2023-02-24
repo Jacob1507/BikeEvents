@@ -67,7 +67,11 @@ class EventList(generics.ListCreateAPIView):
     queryset = Event.objects.all().order_by('-start_date')
     serializer_class = EventsSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    filter_backends = (DjangoFilterBackend,)
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = [
+        'event_title', 'event_type', 'location', 'is_uci_regulated',
+        'start_date', 'end_date', 'stages', 'difficulty', 'tracks'
+    ]
 
     def perform_create(self, serializer):
         return serializer.save()

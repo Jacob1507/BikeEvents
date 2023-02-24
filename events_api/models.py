@@ -35,7 +35,7 @@ class Event(models.Model):
     is_uci_regulated = models.BooleanField()
     start_date = models.DateField()
     end_date = models.DateField()
-    stages = models.IntegerField()
+    stages = models.IntegerField(default=1)
     difficulty = models.CharField(choices=DIFFICULTY, max_length=30)
     event_weight = models.DecimalField(decimal_places=1, max_digits=100)
 
@@ -96,6 +96,7 @@ class Rider(models.Model):
 
     class Meta:
         unique_together = ('first_name', 'last_name',)
+        ordering = ['-id']
 
 
 class EventParticipant(models.Model):
