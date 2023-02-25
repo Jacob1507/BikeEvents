@@ -1,13 +1,9 @@
 from django.urls import reverse
 from django.utils import timezone
-from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 
 from rest_framework import status
-from rest_framework.test import APIRequestFactory
-from rest_framework.test import force_authenticate
 from rest_framework.test import APITestCase
-from rest_framework.test import APIClient
 
 from events_api.models import Event
 from events_api.models import Track
@@ -63,6 +59,17 @@ events_data: list = [
         "stages": 0,
         "difficulty": "SR",
         "event_weight": 2,
+    },
+    {
+        "event_title": "TestEvent4",
+        "event_type": "MT",
+        "location": "CAN",
+        "is_uci_regulated": False,
+        "start_date": START_DATE,
+        "end_date": END_DATE,
+        "stages": 1,
+        "difficulty": "AM",
+        "event_weight": 2.5,
     },
 ]
 
@@ -166,7 +173,7 @@ class TestEventAPI(APITestCase):
 
     def test_event_post(self):
         url = reverse('event-list')
-        data = events_data[1]
+        data = dict(events_data[1])
         data["tracks"] = list()
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -174,7 +181,8 @@ class TestEventAPI(APITestCase):
 
     def test_event_patch(self):
         url = reverse('event-list')
-        events_data[2]['tracks'] = list()
+        data = dict(events_data[2])
+        data['tracks'] = list()
         new_data = {
             "event_title": "test_event_patch_request",
             "event_type": "XC",
@@ -199,7 +207,8 @@ class TestEventAPI(APITestCase):
 
     def test_event_put(self):
         url = reverse('event-list')
-        events_data[2]['tracks'] = list()
+        data = dict(events_data[2])
+        data['tracks'] = list()
         new_data = {
             "event_title": "test_event_put_request",
             "event_type": "CX",
@@ -212,15 +221,15 @@ class TestEventAPI(APITestCase):
             "event_weight": 2.2,
         }
 
-        response_post = self.client.post(url, data=events_data[2])
+        response_post = self.client.post(url, data=data)
         self.assertEqual(response_post.status_code, status.HTTP_201_CREATED)
 
-        obj = Event.objects.get(event_title=events_data[2]['event_title'])
+        obj = Event.objects.get(event_title=data['event_title'])
         url = reverse('event-detail', args=(obj.pk,))
 
         response_patch = self.client.patch(url, data=new_data, format='json')
         self.assertEqual(response_patch.status_code, status.HTTP_200_OK)
-        self.assertNotEqual(events_data[2]["event_title"], new_data["event_title"])
+        self.assertNotEqual(data["event_title"], new_data["event_title"])
 
     def test_event_delete(self):
         get_pk = Event.objects.get(event_title=events_data[0]['event_title']).pk
@@ -318,8 +327,12 @@ class TestEventParticipantsAPI(APITestCase):
         self.client.login(username='test_user', password='test')
 
         self.event1: Event = Event.objects.create(**events_data[0])
+        self.event2: Event = Event.objects.create(**events_data[1])
+        self.event3: Event = Event.objects.create(**events_data[3])
+
         self.team1: Team = Team.objects.create(**teams_data[0])
         self.rider1: Rider = Rider.objects.create(team=self.team1, **riders_data[0])
+        self.event_participant = EventParticipant.objects.create(person=self.rider1, event=self.event3)
 
     def tearDown(self) -> None:
         User.objects.all().delete()
@@ -351,3 +364,58 @@ class TestEventParticipantsAPI(APITestCase):
         response_get = self.client.get(url)
         self.assertEqual(response_get.status_code, status.HTTP_200_OK)
 
+    def test_event_update(self):
+        """ Both put and patch methods are handled by perform_update() """
+        # Post new item
+        obj_get_rider = Rider.objects.get(first_name='Jakub', last_name='Bagiński')
+        obj_get_event = Event.objects.get(event_title='TestEvent1')
+        data = {
+            "person": obj_get_rider.pk,
+            "event": obj_get_event.pk,
+        }
+
+        url = reverse('event-participants-list')
+        response_post = self.client.post(url, data=data)
+        self.assertEqual(response_post.status_code, status.HTTP_201_CREATED)
+
+        # Update data in record
+        Rider.objects.create(
+            team=self.team1,
+            first_name='new',
+            last_name='rider',
+            age=18,
+            country='Canada',
+            uci_points_total=0,
+        )
+        new_rider_obj = Rider.objects.get(first_name='new', last_name='rider')
+        new_data = {"person": new_rider_obj.pk}
+
+        get_pk = EventParticipant.objects.get(person=1, event=1).pk
+
+        url = reverse('event-participants-detail', args=(get_pk,))
+        response_patch = self.client.patch(url, data=new_data)
+
+        self.assertEqual(response_patch.status_code, status.HTTP_200_OK)
+        self.assertTrue(EventParticipant.objects.get(pk=get_pk).to_dict().get('person'), new_rider_obj.pk)
+
+        new_data["person"] = self.rider1.pk
+        new_data["event"] = self.event2.pk
+
+        response_patch = self.client.patch(url, data=new_data)
+
+        self.assertEqual(response_patch.status_code, status.HTTP_200_OK)
+        self.assertTrue(EventParticipant.objects.get(pk=get_pk).to_dict().get("person"), new_data["person"])
+        self.assertTrue(EventParticipant.objects.get(pk=get_pk).to_dict().get("event"), new_data["event"])
+
+    def test_event_participants_delete(self):
+        obj = EventParticipant.objects.get(person=self.rider1.pk, event=self.event3)
+        url = reverse('event-participants-detail', args=(obj.pk,))
+
+        response_delete = self.client.delete(url)
+        self.assertEqual(response_delete.status_code, status.HTTP_204_NO_CONTENT)
+
+        response_get = self.client.get(url)
+        self.assertEqual(response_get.status_code, status.HTTP_404_NOT_FOUND)
+
+
+# TODO: Finish CRUDE tests for EventParticipants

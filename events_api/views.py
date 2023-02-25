@@ -1,5 +1,4 @@
 from django.contrib.auth.models import User
-
 from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import generics, permissions, status
@@ -264,6 +263,10 @@ class EventParticipantDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def perform_destroy(self, instance):
         return instance.delete()
+
+    def perform_update(self, serializer):
+        """ Both put and patch methods are handled by perform_update() """
+        return serializer.save()
 
 
 class RaceDataList(generics.ListCreateAPIView):
